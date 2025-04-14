@@ -1,0 +1,208 @@
+/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #1e3a8a;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styling */
+form {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    margin: 0 auto 30px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+form:hover {
+    transform: translateY(-5px);
+}
+
+label {
+    display: block;
+    color: #1e3a8a;
+    font-weight: 500;
+    margin: 10px 0 5px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#submitButton {
+    background: #3b82f6;
+    color: white;
+}
+
+#submitButton:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+}
+
+#cancelButton {
+    background: #ef4444;
+    color: white;
+    margin-left: 10px;
+}
+
+#cancelButton:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
+
+/* Table Styling */
+table {
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+    background: #1e3a8a;
+    color: white;
+    font-weight: 600;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background: #f9fafb;
+    transition: background 0.2s ease;
+}
+
+/* Actions Buttons */
+.actions button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin: 0 5px;
+}
+
+.actions button:first-child {
+    background: #10b981;
+    color: white;
+}
+
+.actions button:first-child:hover {
+    background: #059669;
+}
+
+.actions button:last-child {
+    background: #ef4444;
+    color: white;
+}
+
+.actions button:last-child:hover {
+    background: #dc2626;
+}
+
+/* Messages */
+.message {
+    text-align: center;
+    color: #10b981;
+    background: #d1fae5;
+    width: 90%;
+    max-width: 500px;
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 8px;
+    display: none;
+}
+
+.error {
+    text-align: center;
+    color: #ef4444;
+    background: #fee2e2;
+    width: 90%;
+    max-width: 500px;
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 8px;
+    display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    form {
+        width: 95%;
+        padding: 15px;
+    }
+
+    table {
+        width: 95%;
+    }
+
+    th, td {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .actions button {
+        width: 100%;
+        margin: 5px 0;
+    }
+}

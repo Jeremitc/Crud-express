@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Lista de Usuarios</h1>
+
+    <!-- Mensajes de retroalimentación -->
+    <div id="successMessage" class="message"></div>
+    <div id="errorMessage" class="error"></div>
+
+    <!-- Formulario para crear/editar usuarios -->
+    <form id="usuarioForm">
+        <input type="hidden" id="usuarioId">
+        <label for="Nombre">Nombre:</label>
+        <input type="text" id="Nombre" required>
+        <label for="carrera">Carrera:</label>
+        <input type="text" id="carrera" required>
+        <label for="semestre">Semestre:</label>
+        <input type="number" id="semestre" required min="1">
+        <button type="submit" id="submitButton">Crear Usuario</button>
+        <button type="button" id="cancelButton" style="display: none;">Cancelar</button>
+    </form>
+
+    <!-- Tabla de usuarios -->
+    <table id="tablaUsuarios">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Carrera</th>
+                <th>Semestre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla"></tbody>
+    </table>
+
+    <script>
+        async function cargarUsuarios() {
+            try {
+                const respuesta = await fetch('/api/usuarios');
+                if (!respuesta.ok) throw new Error('Error al obtener usuarios');
+                const usuarios = await respuesta.json();
+                
+                const cuerpoTabla = document.getElementById('cuerpoTabla');
+                cuerpoTabla.innerHTML = '';
+
+                usuarios.forEach(usuario => {
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${usuario.id}</td>
+                        <td>${usuario.Nombre}</td>
+                        <td>${usuario.carrera}</td>
+                        <td>${usuario.semestre}</td>
+                        <td class="actions">
+                            <button onclick="editarUsuario(${usuario.id}, '${usuario.Nombre.replace(/'/g, "\\'")}', '${usuario.carrera.replace(/'/g, "\\'")}', ${usuario.semestre})">Editar</button>
+                            <button onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
+                        </td>
+                    `;
+                    cuerpoTabla.appendChild(fila);
+                });
+            } catch (error) {
+                showError('Error al cargar usuarios: ' + error.message);
+            }
+        }
+
+        async function crearUsuario(usuario) {
+            try {
+                const respuesta = await fetch('/api/usuarios', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(usuario),
+                });
+                const data = await respuesta.json();
+                if (!respuesta.ok) throw new Error(data.error || 'Error al crear usuario');
+                await cargarUsuarios();
+                showSuccess('Usuario creado con éxito');
+                return true;
+            } catch (error) {
+                showError('Error al crear usuario: ' + error.message);
+                return false;
+            }
+        }
+
+        async function actualizarUsuario(id, usuario, metodo = 'PUT') {
+            try {
+                const respuesta = await fetch(`/api/usuarios/${id}`, {
+                    method: metodo,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(usuario),
+                });
+                const data = await respuesta.json();
+                if (!respuesta.ok) throw new Error(data.error || `Error al ${metodo === 'PUT' ? 'actualizar' : 'editar parcialmente'} usuario`);
+                await cargarUsuarios();
+                showSuccess('Usuario actualizado con éxito');
+                return true;
+            } catch (error) {
+                showError('Error al actualizar usuario: ' + error.message);
+                return false;
+            }
+        }
+
+        async function eliminarUsuario(id) {
+            if (!confirm('¿Estás seguro de eliminar este usuario?')) return;
+            try {
+                const respuesta = await fetch(`/api/usuarios/${id}`, {
+                    method: 'DELETE',
+                });
+                const data = await respuesta.json();
+                if (!respuesta.ok) throw new Error(data.error || 'Error al eliminar usuario');
+                await cargarUsuarios();
+                showSuccess('Usuario eliminado con éxito');
+            } catch (error) {
+                showError('Error al eliminar usuario: ' + error.message);
+            }
+        }
+
+        function editarUsuario(id, Nombre, carrera, semestre) {
+            document.getElementById('usuarioId').value = id;
+            document.getElementById('Nombre').value = Nombre;
+            document.getElementById('carrera').value = carrera;
+            document.getElementById('semestre').value = semestre;
+            document.getElementById('submitButton').textContent = 'Actualizar Usuario';
+            document.getElementById('cancelButton').style.display = 'inline';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => successDiv.style.display = 'none', 3000);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 3000);
+        }
+
+        document.getElementById('usuarioForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('usuarioId').value;
+            const usuario = {
+                Nombre: document.getElementById('Nombre').value,
+                carrera: document.getElementById('carrera').value,
+                semestre: parseInt(document.getElementById('semestre').value),
+            };
+
+            let exito;
+            if (id) {
+                exito = await actualizarUsuario(id, usuario, 'PUT');
+            } else {
+                exito = await crearUsuario(usuario);
+            }
+
+            if (exito) {
+                document.getElementById('usuarioForm').reset();
+                document.getElementById('usuarioId').value = '';
+                document.getElementById('submitButton').textContent = 'Crear Usuario';
+                document.getElementById('cancelButton').style.display = 'none';
+            }
+        });
+
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            document.getElementById('usuarioForm').reset();
+            document.getElementById('usuarioId').value = '';
+            document.getElementById('submitButton').textContent = 'Crear Usuario';
+            document.getElementById('cancelButton').style.display = 'none';
+        });
+
+        // Cargar usuarios al iniciar
+        window.onload = cargarUsuarios;
+    </script>
+</body>
+</html>
